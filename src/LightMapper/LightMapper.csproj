@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>LightMapper</RootNamespace>
+    <Description>Compile-time object mapper powered by C# source generators.</Description>
+    <PackageId>LightMapper</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>LightMapper</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageDescription>LightMapper generates allocation-light DTO mapping code using Roslyn source generators. Include the analyzer via build/LightMapper.targets (packaged with this library).</PackageDescription>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LightMapper.SourceGenerators\LightMapper.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup Label="NuGet packaging">
+    <None Include="build\LightMapper.targets" Pack="true" PackagePath="build\LightMapper.targets" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddLightMapperAnalyzerToPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+  <Target Name="AddLightMapperAnalyzerToPackage">
+    <PropertyGroup>
+      <_LightMapperAnalyzerPath>$(MSBuildThisFileDirectory)..\LightMapper.SourceGenerators\bin\$(Configuration)\netstandard2.0\LightMapper.SourceGenerators.dll</_LightMapperAnalyzerPath>
+    </PropertyGroup>
+    <ItemGroup Condition="Exists('$(_LightMapperAnalyzerPath)')">
+      <TfmSpecificPackageFile Include="$(_LightMapperAnalyzerPath)" PackagePath="analyzers/dotnet/cs/LightMapper.SourceGenerators.dll" />
+    </ItemGroup>
+    <Warning Text="LightMapper.SourceGenerators.dll not found at $(_LightMapperAnalyzerPath); build the analyzer project first." Condition="!Exists('$(_LightMapperAnalyzerPath)')" />
+  </Target>
+</Project>

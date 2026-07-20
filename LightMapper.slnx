@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/LightMapper.Sample/LightMapper.Sample.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LightMapper.Tests/LightMapper.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/LightMapper.SourceGenerators/LightMapper.SourceGenerators.csproj" />
+    <Project Path="src/LightMapper/LightMapper.csproj" />
+  </Folder>
+ 
+</Solution>

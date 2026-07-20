@@ -1,0 +1,17 @@
+<Project>
+  <!--
+    NuGet: analyzers/dotnet/cs/LightMapper.SourceGenerators.dll is picked up automatically by the SDK.
+    This targets file remains for optional MSBuild hooks and for local development when the package layout
+    (analyzers folder next to build/) is not present yet.
+  -->
+  <Choose>
+    <When Condition="Exists('$(MSBuildThisFileDirectory)..\..\LightMapper.SourceGenerators\bin\$(Configuration)\netstandard2.0\LightMapper.SourceGenerators.dll')">
+      <PropertyGroup>
+        <_LightMapperGeneratorPath>$(MSBuildThisFileDirectory)..\..\LightMapper.SourceGenerators\bin\$(Configuration)\netstandard2.0\LightMapper.SourceGenerators.dll</_LightMapperGeneratorPath>
+      </PropertyGroup>
+    </When>
+  </Choose>
+  <ItemGroup Condition="'$(_LightMapperGeneratorPath)' != ''">
+    <Analyzer Include="$(_LightMapperGeneratorPath)" />
+  </ItemGroup>
+</Project>
