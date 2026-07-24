@@ -20,14 +20,14 @@ internal static class Program
             ],
         };
 
-        var dto = LightMapDispatch.Map<Order, OrderDto>(order);
+        var dto = Maps.Map<Order, OrderDto>(order);
         Console.WriteLine($"DTO: {dto.Reference} lines={dto.OrderLines.Count}");
 
         ILightMapper<Order, OrderDto> mapper = MapperRegistry.Get<Order, OrderDto>();
         var dto2 = mapper.Map(order);
         Console.WriteLine($"Mapper: {dto2.Reference}");
 
-        var roundTrip = LightMapDispatch.Map<OrderDto, Order>(dto2);
+        var roundTrip = Maps.Map<OrderDto, Order>(dto2);
         Console.WriteLine($"Round-trip: {roundTrip.Lines.Count} lines, first SKU={roundTrip.Lines[0].Sku}, tags={string.Join(",", roundTrip.Tags)}");
 
         var services = new ServiceCollection();

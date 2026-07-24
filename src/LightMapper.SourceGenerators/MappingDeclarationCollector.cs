@@ -52,31 +52,37 @@ internal static class MappingDeclarationCollector
             if (context.Attributes.IsDefaultOrEmpty)
                 continue;
 
-            var attr = context.Attributes[0];
-            if (attr.ConstructorArguments.Length < 1)
-                continue;
-
-            var arg = attr.ConstructorArguments[0];
-            if (arg.Value is not INamedTypeSymbol destinationType)
+            foreach (var attr in context.Attributes)
             {
-                production.ReportDiagnostic(Diagnostic.Create(
-                    DiagnosticDescriptors.InvalidLightMapTarget,
-                    attr.ApplicationSyntaxReference?.GetSyntax().GetLocation() ?? Location.None,
-                    sourceType.ToDisplayString()));
-                continue;
+                if (!IsLightMapAttribute(attr.AttributeClass))
+                    continue;
+
+                if (attr.ConstructorArguments.Length < 1)
+                    continue;
+
+                var arg = attr.ConstructorArguments[0];
+                if (arg.Value is not INamedTypeSymbol destinationType)
+                {
+                    production.ReportDiagnostic(Diagnostic.Create(
+                        DiagnosticDescriptors.InvalidLightMapTarget,
+                        attr.ApplicationSyntaxReference?.GetSyntax().GetLocation() ?? Location.None,
+                        sourceType.ToDisplayString()));
+                    continue;
+                }
+
+                var bidirectional = false;
+                foreach (var named in attr.NamedArguments)
+                {
+                    if (named.Key == "Bidirectional" && named.Value.Value is bool b)
+                        bidirectional = b;
+                }
+
+                var location = attr.ApplicationSyntaxReference?.GetSyntax().GetLocation() ?? GetLocation(context);
+                builder.Add(new MappingDeclaration(sourceType, destinationType, location));
+
+                if (bidirectional)
+                    builder.Add(new MappingDeclaration(destinationType, sourceType, location));
             }
-
-            var bidirectional = false;
-            foreach (var named in attr.NamedArguments)
-            {
-                if (named.Key == "Bidirectional" && named.Value.Value is bool b)
-                    bidirectional = b;
-            }
-
-            builder.Add(new MappingDeclaration(sourceType, destinationType, GetLocation(context)));
-
-            if (bidirectional)
-                builder.Add(new MappingDeclaration(destinationType, sourceType, GetLocation(context)));
         }
 
         return Normalize(builder.ToImmutable());
@@ -93,4 +99,8 @@ internal static class MappingDeclarationCollector
 
         return context.Attributes[0].ApplicationSyntaxReference?.GetSyntax().GetLocation() ?? Location.None;
     }
+
+    private static bool IsLightMapAttribute(INamedTypeSymbol? attributeClass) =>
+        attributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ==
+        "global::LightMapper.LightMapAttribute";
 }
