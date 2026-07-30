@@ -1,3 +1,5 @@
+> **Disclaimer:** This project is an experimental, work-in-progress prototype built with the help of "vibe coding". Things will break. Features are currently missing, and the build scripts might not work at all. It is shared purely for educational or entertainment purposes.
+
 # LightMapper
 
 Compile-time object mapper for .NET powered by Roslyn source generators. No reflection on the mapping hot path.
